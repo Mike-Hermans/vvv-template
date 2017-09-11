@@ -44,8 +44,7 @@ PHP
     rm -rf twenty*
 
     # Download and configure theme
-    git clone https://github.com/Mike-Hermans/Clarkson-Theme.git .
-    mv Clarkson-Theme ${VVV_SITE_NAME}
+    git clone https://github.com/Mike-Hermans/Clarkson-Theme.git ${VVV_SITE_NAME}
     noroot wp theme activate ${VVV_SITE_NAME}
     cd ${VVV_SITE_NAME}
     composer install
