@@ -20,9 +20,12 @@ mkdir -p ${VVV_PATH_TO_SITE}/log
 touch ${VVV_PATH_TO_SITE}/log/error.log
 touch ${VVV_PATH_TO_SITE}/log/access.log
 
+# Remove default git repo
+rm -rf .git
+
 # Install and configure the latest stable version of WordPress
 if [[ ! -d "${VVV_PATH_TO_SITE}/public_html" ]]; then
-    mkdir public_html
+    mkdir ${VVV_PATH_TO_SITE}/public_html
     cd ${VVV_PATH_TO_SITE}/public_html
 
     echo "Downloading WordPress..."
@@ -47,11 +50,11 @@ PHP
     git clone https://github.com/Mike-Hermans/Clarkson-Theme.git ${VVV_SITE_NAME}
     noroot wp theme activate ${VVV_SITE_NAME}
     cd ${VVV_SITE_NAME}
-    composer install
+    rm -rf .git
+    noroot composer install
     cd development
-    npm install
-    bower install
-    gulp --production
+    noroot npm install
+    noroot npm run dev
 
 else
     echo "Updating WordPress"
