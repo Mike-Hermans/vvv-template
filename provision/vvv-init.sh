@@ -9,6 +9,8 @@ WP_TYPE=`get_config_value 'wp_type' "single"`
 DB_NAME=`get_config_value 'db_name' "${VVV_SITE_NAME}"`
 DB_NAME=${DB_NAME//[\\\/\.\<\>\:\"\'\|\?\!\*-]/}
 
+PROJECT_REPO=`get_config_value 'project_repo'`
+
 # Make a database, if we don't already have one
 echo -e "\nCreating database '${DB_NAME}' (if it's not already there)"
 mysql -u root --password=root -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}"
@@ -43,18 +45,20 @@ PHP
     cd wp-content/plugins
     rm -rf akismet hello.php
 
-    cd ../themes
-    rm -rf twenty*
+    # If project_repo is set, download the project and remove all other themes.
+    if [ -n "${PROJECT_REPO}" ]; then
+        cd ../themes
+        rm -rf twenty*
 
-    # Download and configure theme
-    git clone https://github.com/Mike-Hermans/Clarkson-Theme.git ${VVV_SITE_NAME}
-    noroot wp theme activate ${VVV_SITE_NAME}
-    cd ${VVV_SITE_NAME}
-    rm -rf .git
-    noroot composer install
-    cd development
-    noroot npm install
-    noroot npm run dev
+        noroot git clone ${PROJECT_REPO} ${VVV_SITE_NAME}
+        noroot wp theme activate ${VVV_SITE_NAME}
+
+        cd ${VVV_SITE_NAME}
+        noroot composer install
+        cd development
+        noroot npm install
+        noroot npm run dev
+    fi
 
 else
     echo "Updating WordPress"
