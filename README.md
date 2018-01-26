@@ -46,4 +46,13 @@ custom:
 ```
 Defines the DB name for the installation.
 
+```
+custom:
+    production: https://cool-website.com
+```
+Defines the production website from where not-found images will be pulled.
 
+```
+custom:
+    use_bower: True
+Also run a Bower install

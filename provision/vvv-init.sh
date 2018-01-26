@@ -1,13 +1,19 @@
 #!/usr/bin/env bash
 # Provision WordPress Stable
 
+#
+#   SETUP
+#
+
 DOMAIN=`get_primary_host "${VVV_SITE_NAME}".dev`
 DOMAINS=`get_hosts "${DOMAIN}"`
+PROD_DOMAIN=`get_config_value 'production'`
 SITE_TITLE=`get_config_value 'site_title' "${DOMAIN}"`
 WP_VERSION=`get_config_value 'wp_version' 'latest'`
 WP_TYPE=`get_config_value 'wp_type' "single"`
 DB_NAME=`get_config_value 'db_name' "${VVV_SITE_NAME}"`
 DB_NAME=${DB_NAME//[\\\/\.\<\>\:\"\'\|\?\!\*-]/}
+USE_BOWER=`get_config_value 'use_bower'`
 
 PROJECT_REPO=`get_config_value 'project_repo'`
 
@@ -25,7 +31,9 @@ touch ${VVV_PATH_TO_SITE}/log/access.log
 # Remove default git repo
 rm -rf .git
 
-# Install and configure the latest stable version of WordPress
+#
+#   WORDPRESS
+#
 if [[ ! -d "${VVV_PATH_TO_SITE}/public_html" ]]; then
     mkdir ${VVV_PATH_TO_SITE}/public_html
     cd ${VVV_PATH_TO_SITE}/public_html
@@ -38,8 +46,16 @@ if [[ ! -d "${VVV_PATH_TO_SITE}/public_html" ]]; then
 define( 'WP_DEBUG', true );
 PHP
 
+    # Check if we need multisite or not
     echo "Installing WordPress"
-    noroot wp core install --url="${DOMAIN}" --quiet --title="${SITE_TITLE}" --admin_name=admin --admin_email="admin@local.dev" --admin_password="admin"
+    if [ "${WP_TYPE}" = "subdomain" ]; then
+        INSTALL_COMMAND="multisite-install --subdomains"
+    elif [ "${WP_TYPE}" = "subdirectory" ]; then
+        INSTALL_COMMAND="multisite-install"
+    else
+        INSTALL_COMMAND="install"
+    fi
+    noroot wp core ${INSTALL_COMMAND} --url="${DOMAIN}" --quiet --title="${SITE_TITLE}" --admin_name=admin --admin_email="admin@local.dev" --admin_password="admin"
 
     # Remove unneeded plugins and themes
     cd wp-content/plugins
@@ -50,6 +66,8 @@ PHP
         cd ../themes
         rm -rf twenty*
 
+        echo "cloning ${PROJECT_REPO} into ${VVV_SITE_NAME}"
+
         noroot git clone ${PROJECT_REPO} ${VVV_SITE_NAME}
         noroot wp theme activate ${VVV_SITE_NAME}
 
@@ -57,7 +75,10 @@ PHP
         noroot composer install
         cd development
         noroot npm install
-        noroot npm run dev
+        if [ -n "${USE_BOWER}" ]; then
+            noroot ./node_modules/.bin/bower install
+        fi
+        noroot ./node_modules/.bin/gulp
     fi
 
 else
@@ -66,5 +87,13 @@ else
     noroot wp core update --version="${WP_VERSION}"
 fi
 
-cp -f "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf.tmpl" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
+#
+#   NGINX RULES
+#
+if [ -n "${PROD_DOMAIN}" ]; then
+    cp -f "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf.media.tmpl" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
+    sed -i "s#{{PROD_DOMAIN}}#${PROD_DOMAIN}#" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
+else
+    cp -f "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf.tmpl" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
+fi
 sed -i "s#{{DOMAINS_HERE}}#${DOMAINS}#" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
