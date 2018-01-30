@@ -16,6 +16,7 @@ my-site:
   custom:
     production: https://my-site.com
     site_title: My Site
+    project_repo: git@github.com/project/theme.git
 ```
 | Setting    | Value       |
 |------------|-------------|
@@ -36,21 +37,29 @@ hosts:
 Defines the domains and hosts for VVV to listen on.
 The first domain in this list is your sites primary domain.
 
+### Custom variables
+These are defined under the 'custom:' variable.
+
+#### Project Repo
 ```
-custom:
-    site_title: My Awesome Dev Site
+project_repo: git@github.com/level-level/Clarkson-Theme.git
+```
+Defines a theme that needs to be pulled. Also tries to do a Composer and NPM install.
+
+#### Site Title
+```
+site_title: My Awesome Dev Site
 ```
 Defines the site title to be set upon installing WordPress.
 
+#### DB Name
+```
+db_name: super_secret_db_name
+```
+Defines a custom DB name for the installation.
 
+#### Production
 ```
-custom:
-    db_name: super_secret_db_name
-```
-Defines the DB name for the installation.
-
-```
-custom:
-    production: https://cool-website.com
+production: https://cool-website.com
 ```
 Defines the production website from where not-found images will be pulled.
