@@ -5,7 +5,7 @@
 #   SETUP
 #
 
-DOMAIN=`get_primary_host "${VVV_SITE_NAME}".dev`
+DOMAIN=`get_primary_host "${VVV_SITE_NAME}".test`
 DOMAINS=`get_hosts "${DOMAIN}"`
 PROD_DOMAIN=`get_config_value 'production'`
 SITE_TITLE=`get_config_value 'site_title' "${DOMAIN}"`
@@ -13,7 +13,6 @@ WP_VERSION=`get_config_value 'wp_version' 'latest'`
 WP_TYPE=`get_config_value 'wp_type' "single"`
 DB_NAME=`get_config_value 'db_name' "${VVV_SITE_NAME}"`
 DB_NAME=${DB_NAME//[\\\/\.\<\>\:\"\'\|\?\!\*-]/}
-USE_BOWER=`get_config_value 'use_bower'`
 
 PROJECT_REPO=`get_config_value 'project_repo'`
 
@@ -55,7 +54,7 @@ PHP
     else
         INSTALL_COMMAND="install"
     fi
-    noroot wp core ${INSTALL_COMMAND} --url="${DOMAIN}" --quiet --title="${SITE_TITLE}" --admin_name=admin --admin_email="admin@local.dev" --admin_password="admin"
+    noroot wp core ${INSTALL_COMMAND} --url="${DOMAIN}" --quiet --title="${SITE_TITLE}" --admin_name=admin --admin_email="admin@local.test" --admin_password="admin"
 
     # Remove unneeded plugins and themes
     cd wp-content/plugins
@@ -75,7 +74,7 @@ PHP
         noroot composer install
         cd development
         noroot npm install
-        if [ -n "${USE_BOWER}" ]; then
+        if [ -f "bower.json" ]; then
             noroot ./node_modules/.bin/bower install
         fi
         noroot ./node_modules/.bin/gulp
