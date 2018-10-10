@@ -1,5 +1,5 @@
-# VVV personal site template
-Copied from https://github.com/Varying-Vagrant-Vagrants/custom-site-template
+# VVV site template
+Copied from https://github.com/Varying-Vagrant-Vagrants/custom-site-template, optimized for Level Level created themes (or in general themes using Clarkson Core / Clarkson Theme).
 
 ## Overview
 This template will allow you to create a WordPress dev environment using only `vvv-custom.yml`.
@@ -90,8 +90,9 @@ Usage:
 site_title: My Awesome Dev Site
 ```
 
-#### Project Repo
+#### Project repository
 Defines a theme that needs to be pulled. Also tries to do a Composer and NPM install.
+Keep in mind that on protected repositories, your ssh key must be added to the SSH agent. On MacOS, use the `ssh-agent -K` command to accomplish this. Also make sure that if this is the case, do not use the http url to clone the project, but the ssh url.
 
 Usage:
 ```
@@ -106,7 +107,7 @@ Usage:
 production: https://cool-website.com
 ```
 
-#### DB Name
+#### Database name
 Defines a custom DB name for the installation.
 
 Usage:
@@ -114,7 +115,7 @@ Usage:
 db_name: super_secret_db_name
 ```
 
-#### DB Prefix
+#### Database prefix
 Defines a custom DB prefix for the installation.
 
 Usage:

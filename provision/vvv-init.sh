@@ -41,7 +41,7 @@ if [[ ! -d "${VVV_PATH_TO_SITE}/public_html" ]]; then
     echo "Downloading WordPress..."
     noroot wp core download --version="${WP_VERSION}"
 
-    echo "Configuring Database and DEBUG mode"
+    echo "Configuring wp-config.php"
     noroot wp core config --dbname="${DB_NAME}" --dbuser=wp --dbpass=wp --quiet
     noroot wp config set WP_DEBUG true --raw
     noroot wp config set table_prefix "${DB_PREFIX}" --type=variable
