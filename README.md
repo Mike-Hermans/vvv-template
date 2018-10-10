@@ -9,7 +9,8 @@ This template will allow you to create a WordPress dev environment using only `v
 Copy vvv-config.yml to vvv-custom.yml, and remove the sites that are already there.
 
 ### The minimum required configuration:
-
+This is the minimum required config for a site, all other config keys are optional. Keep in mind that
+the value for 'repo' should not be changed.
 ```
 my-site:
   repo: https://github.com/mike-hermans/vvv-template
@@ -31,6 +32,7 @@ Adding a 'custom' group will allow for much more configuration. All keys are lis
 my-site:
   repo: https://github.com/mike-hermans/vvv-template
   wp_type: single
+  wp_version: latest
   hosts:
     - my-site.test
   custom:
@@ -55,6 +57,14 @@ wp_type: subdirectory
 
 # Multisite using subdomains
 wp_type: subdomain
+````
+
+#### WP Version
+Specific WordPress version, defaults to 'latest'
+
+Usage:
+````
+wp_version: 4.9.5
 ````
 
 #### Hosts
