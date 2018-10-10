@@ -40,12 +40,11 @@ if [[ ! -d "${VVV_PATH_TO_SITE}/public_html" ]]; then
 
     echo "Downloading WordPress..."
     noroot wp core download --version="${WP_VERSION}"
-    noroot wp config set table_prefix "${DB_PREFIX}" --type=variable
 
     echo "Configuring Database and DEBUG mode"
-    noroot wp core config --dbname="${DB_NAME}" --dbuser=wp --dbpass=wp --quiet --extra-php <<PHP
-define( 'WP_DEBUG', true );
-PHP
+    noroot wp core config --dbname="${DB_NAME}" --dbuser=wp --dbpass=wp --quiet
+    noroot wp config set WP_DEBUG true --raw
+    noroot wp config set table_prefix "${DB_PREFIX}" --type=variable
 
     # Check if we need multisite or not
     echo "Installing WordPress"
@@ -70,18 +69,24 @@ PHP
         echo "cloning ${PROJECT_REPO} into ${VVV_SITE_NAME}"
 
         noroot git clone ${PROJECT_REPO} ${VVV_SITE_NAME}
-        noroot wp theme activate ${VVV_SITE_NAME}
 
-        cd ${VVV_SITE_NAME}
-        noroot composer install
-        cd development
-        noroot npm install
-        if [ -f "bower.json" ]; then
-            noroot ./node_modules/.bin/bower install
+        if [ -d "${VVV_SITE}" ]; then
+            noroot wp theme activate ${VVV_SITE_NAME}
+
+            cd ${VVV_SITE_NAME}
+            noroot composer install
+            cd development
+            noroot npm install
+            if [ -f "bower.json" ]; then
+                noroot ./node_modules/.bin/bower install
+            fi
+            noroot ./node_modules/.bin/gulp
+        else
+            echo "Could not clone ${PROJECT_REPO} into ${VVV_SITE_NAME}"
+            echo "Check if the repository exists and if your ssh key has been added to the ssh-agent"
         fi
-        noroot ./node_modules/.bin/gulp
     fi
-
+# If the project already exists, just update WordPress
 else
     echo "Updating WordPress"
     cd ${VVV_PATH_TO_SITE}/public_html
