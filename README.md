@@ -38,6 +38,7 @@ my-site:
     project_repo: git@github.com/project/theme.git
     production: https://my-site.com
     db_name: custom_db_name
+    db_prefix: lvl28_
 ```
 
 ## Default configuration variables
@@ -101,4 +102,12 @@ Defines a custom DB name for the installation.
 Usage:
 ```
 db_name: super_secret_db_name
+```
+
+#### DB Prefix
+Defines a custom DB prefix for the installation.
+
+Usage:
+```
+db_prefix: lvl28_
 ```

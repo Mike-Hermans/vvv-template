@@ -13,6 +13,7 @@ WP_VERSION=`get_config_value 'wp_version' 'latest'`
 WP_TYPE=`get_config_value 'wp_type' "single"`
 DB_NAME=`get_config_value 'db_name' "${VVV_SITE_NAME}"`
 DB_NAME=${DB_NAME//[\\\/\.\<\>\:\"\'\|\?\!\*-]/}
+DB_PREFIX=`get_config_value 'db_prefix' "wp_"`
 
 PROJECT_REPO=`get_config_value 'project_repo'`
 
@@ -39,6 +40,7 @@ if [[ ! -d "${VVV_PATH_TO_SITE}/public_html" ]]; then
 
     echo "Downloading WordPress..."
     noroot wp core download --version="${WP_VERSION}"
+    noroot wp config set table_prefix "${DB_PREFIX}" --type=variable
 
     echo "Configuring Database and DEBUG mode"
     noroot wp core config --dbname="${DB_NAME}" --dbuser=wp --dbpass=wp --quiet --extra-php <<PHP
