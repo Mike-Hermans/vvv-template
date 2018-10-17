@@ -43,7 +43,7 @@ if [[ ! -d "${VVV_PATH_TO_SITE}/public_html" ]]; then
 
     echo "Configuring wp-config.php"
     noroot wp core config --dbname="${DB_NAME}" --dbuser=wp --dbpass=wp --quiet
-    noroot wp config set WP_DEBUG true --raw
+    noroot wp config set WP_DEBUG true --raw --type=constant
     noroot wp config set table_prefix "${DB_PREFIX}" --type=variable
 
     # Check if we need multisite or not
@@ -70,7 +70,18 @@ if [[ ! -d "${VVV_PATH_TO_SITE}/public_html" ]]; then
 
         noroot git clone ${PROJECT_REPO} ${VVV_SITE_NAME}
 
-        if [ -d "${VVV_SITE}" ]; then
+        # Check if it's a child theme by checking if the parent_theme field returns a value
+        # Because of some type of caching, wp theme list (get) won't return any values the
+        # first few minutes, so we check it manually.
+        while read -r line
+        do
+            # Search for the template line in style.css
+            if [[ $line == Template:* ]]; then
+                noroot wp config set LL_AUTOLOAD_USE_CHILD true --raw --type=constant
+            fi
+        done < "${VVV_SITE_NAME}/style.css"
+
+        if [ -d "${VVV_SITE_NAME}" ]; then
             noroot wp theme activate ${VVV_SITE_NAME}
 
             cd ${VVV_SITE_NAME}
