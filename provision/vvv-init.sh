@@ -44,6 +44,8 @@ if [[ ! -d "${VVV_PATH_TO_SITE}/public_html" ]]; then
     echo "Configuring wp-config.php"
     noroot wp core config --dbname="${DB_NAME}" --dbuser=wp --dbpass=wp --quiet
     noroot wp config set WP_DEBUG true --raw --type=constant
+    noroot wp config set WP_DEBUG_LOG true --raw --type=constant
+    noroot wp config set WP_DISABLE_FATAL_ERROR_HANDLER true --raw --type=constant
     noroot wp config set table_prefix "${DB_PREFIX}" --type=variable
 
     # Check if we need multisite or not
